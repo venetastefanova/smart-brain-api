@@ -35,13 +35,23 @@ const signToken = (email) => {
 
 }
 
+const setToken = (key,value) => {
+    return Promise.resolve(redisClient.set(key,value))
+} 
  // create JWT and return user data
 const createSessions = (user) => {
    const { email, id} = user;
    const token =  signToken(email);
-   return { success: 'true', userId : id, token: token}
+   return setToken(token, id)
+      .then(() => { 
+        return {success: 'true', userId: id, token: token}
 
+      })
+      .catch(console.log);
 }
+
+
+
 // checks if user is authenticated, if not -> handles signin
 const signinAuthentication = (db, bcrypt) => (req,res) => {
   const {authorization} = req.headers;
